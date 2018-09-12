@@ -83,78 +83,78 @@
           $eventstart, $eventend, $contact));
   }
 
-  $uniqueBookings = array_unique($listallbookings, SORT_REGULAR);
-  if (!$uniqueBookings) {
+  function mySort($a, $b) {
+      $a = $a[2];
+      $b = $b[2];
+      if (strtotime($a) == strtotime($b))return 0;
+      return (strtotime($a) < strtotime($b)) ? -1 : 1;
+  }
+
+  if (sizeof($listallbookings) == 0) {
       echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
       <h4 class=\"alert-heading text-center\"> Available in two days! </h4>
   </div>";
       return;
-  }
+  } else {
+      $uniqueBookings = array_unique($listallbookings, SORT_REGULAR);
+      usort($uniqueBookings, "mySort");
 
-  //sort($uniqueBookings);
+      function check_in_range($start_date, $end_date, $date_from_user)
+      {
+          // Convert to timestamp
+          $start_ts = strtotime($start_date);
+          $end_ts = strtotime($end_date);
+          $user_ts = strtotime($date_from_user);
 
-  function check_in_range($start_date, $end_date, $date_from_user)
-  {
-      // Convert to timestamp
-      $start_ts = strtotime($start_date);
-      $end_ts = strtotime($end_date);
-      $user_ts = strtotime($date_from_user);
+          // Check that user date is between start & end
+          return (($user_ts >= $start_ts) && ($user_ts <= $end_ts));
+      }
 
-      // Check that user date is between start & end
-      return (($user_ts >= $start_ts) && ($user_ts <= $end_ts));
-  }
+      $flag = false;
+      $count = 0;
+      foreach ($uniqueBookings as $key=>$value) {
+          $eventname = $value[1];
+          $eventstart = $value[2];
+          $eventend = $value[3];
 
-  $flag = false;
-  $count = 0;
-  foreach ($uniqueBookings as $value) {
-      $eventname = $value[1];
-      $eventstart = $value[2];
-      $eventend = $value[3];
-
-      if (check_in_range($eventstart, $eventend, date( 'Y-m-d\TH:i:s'))) {
-          echo "<div class=\"alert alert-danger col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+          if (check_in_range($eventstart, $eventend, date('Y-m-d\TH:i:s'))) {
+              echo "<div class=\"alert alert-danger col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
             <h4 class=\"alert-heading text-center\">Now Booked! </h4>
             <p class='text-center'>( $eventname Until $eventend )</p>
       </div>";
-          $count++;
-          $flag = true;
-          break;
-      }
-      $count++;
-  }
-
-  while (!$uniqueBookings[$count]) {
-      $count++;
-  }
-  echo "<div class=\"alert alert-warning text-center col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\"> 
-    Next Event: ".$uniqueBookings[$count][1].
-      " from ". $uniqueBookings[$count][2]."</div>";
-
-  if (!$flag) {
-      foreach ($uniqueBookings as $value) {
-          $eventstart = $value[2];
-          $start_ts = strtotime($eventstart);
-          if ($start_ts >= strtotime(date( 'Y-m-d\TH:i:s'))) {
-              echo "<div class=\"alert alert-success\" role=\"alert\">
-            <h4 class=\"alert-heading text-center\"> Now Available! </h4>
-            <p class='text-center'>( Until $eventstart ) </p>
-            </div>";
+              $count = $key+1;
+              echo "<div class=\"alert alert-warning text-center col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+    Next Event: " . $uniqueBookings[$count][1] . " from " . $uniqueBookings[$count][2] . "</div>";
+              $flag = true;
               break;
           }
       }
-  }
-  ?>
 
-  <?php
-  foreach ($uniqueBookings as $outputpiece) {
-      $output .= "<tr class=\"table-secondary\">"."<td>".$outputpiece[0]."</td>".
-          "<td>".$outputpiece[1]."</td>".
-          "<td>".$outputpiece[2]."</td>".
-          "<td>".$outputpiece[3]."</td>".
-          "<td>".$outputpiece[4]."</td>"."<tr>";
+      if (!$flag) {
+          foreach ($uniqueBookings as $value) {
+              $eventstart = $value[2];
+              $start_ts = strtotime($eventstart);
+              if ($start_ts >= strtotime(date('Y-m-d\TH:i:s'))) {
+                  echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+            <h4 class=\"alert-heading text-center\"> Now Available! </h4>
+            <p class='text-center'>( Until $eventstart ) </p>
+            </div>";
+                  echo "<div class=\"alert alert-warning text-center col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+    Next Event: " . $uniqueBookings[$count][1] . " from " . $uniqueBookings[$count][2] . "</div>";
+                  break;
+              }
+          }
+      }
 
-  }
-  if ($output) {
+      foreach ($uniqueBookings as $outputpiece) {
+          $output .= "<tr class=\"table-secondary\">" . "<td>" . $outputpiece[0] . "</td>" .
+              "<td>" . $outputpiece[1] . "</td>" .
+              "<td>" . $outputpiece[2] . "</td>" .
+              "<td>" . $outputpiece[3] . "</td>" .
+              "<td>" . $outputpiece[4] . "</td>" . "<tr>";
+
+      }
+
       echo "<h3 class='text-center col-12 col-sm-6 col-md-8 offset-md-2'>Next two days: </h3>
   <table class=\"table table-bordered col-12 col-sm-2 col-md-8 offset-md-2\">
       <thead class=\"thead-dark\">
@@ -170,10 +170,6 @@
       $output
       </tbody>
   </table>";
-  } else {
-      echo "<div class=\"alert alert-success\" role=\"alert\">
-      <h4 class=\"alert-heading text-center\"> Available in two days! </h4>
-  </div>";
   }
   ?>
 
