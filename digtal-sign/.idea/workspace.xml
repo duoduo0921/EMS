@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b206ca65-ff1c-42ac-ac28-f3e2a4a3335d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EMS_VARIABLES.php" beforeDir="false" afterPath="$PROJECT_DIR$/EMS_VARIABLES.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/room.php" beforeDir="false" afterPath="$PROJECT_DIR$/room.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms.php" beforeDir="false" afterPath="$PROJECT_DIR$/rooms.php" afterDir="false" />
-    </list>
+    <list default="true" id="b206ca65-ff1c-42ac-ac28-f3e2a4a3335d" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +96,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/room.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="511">
+            <state relative-caret-position="1605">
               <caret line="107" column="73" selection-start-line="107" selection-start-column="73" selection-end-line="107" selection-end-column="73" />
             </state>
           </provider>
@@ -202,12 +197,12 @@
       <workItem from="1536689908881" duration="2996000" />
       <workItem from="1536695935124" duration="255000" />
       <workItem from="1536760229968" duration="588000" />
-      <workItem from="1536761233592" duration="4007000" />
+      <workItem from="1536761233592" duration="4134000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10780000" />
+    <option name="totallyTimeSpent" value="10907000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -280,7 +275,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/room.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
+        <state relative-caret-position="1605">
           <caret line="107" column="73" selection-start-line="107" selection-start-column="73" selection-end-line="107" selection-end-column="73" />
         </state>
       </provider>
