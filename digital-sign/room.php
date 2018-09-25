@@ -23,6 +23,7 @@ try {
     exit('Require failed! Error: '.$e);
 }
 
+date_default_timezone_set(GSD_API_EVENTS_DEFAULT_TIMEZONE);
 // define new soap client object
 $client = new SoapClient(SERT_SERVICE_URL);
 
@@ -74,6 +75,11 @@ if (sizeof($listallbookings) == 0) {
         return (($user_ts >= $start_ts) && ($user_ts <= $end_ts));
     }
 
+    function getTime($time) {
+        return date("D g:i A",strtotime($time));
+    }
+
+
     $flag = false;
     $count = 0;
     foreach ($uniqueBookings as $key=>$value) {
@@ -81,15 +87,19 @@ if (sizeof($listallbookings) == 0) {
         $eventstart = $value[2];
         $eventend = $value[3];
 
-        if (check_in_range($eventstart, $eventend, date('Y-m-d\TH:i:s'))) {
-            echo "<div class=\"alert alert-danger col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+        if (check_in_range($eventstart, $eventend, date("Y-m-d\TH:i:s"))) {
+            $endTime = (date('g:i A',strtotime($eventend)));
+            echo "<div class=\"alert alert-danger col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
             <h4 class=\"alert-heading text-center\">Now Booked! </h4>.
             <p class='text-center'> Current Event: $eventname </p>
-            <p class='text-center'> Until $eventend </p>
+            <p class='text-center'> Until Today $endTime </p>
       </div>";
             $count = $key+1;
-            echo "<div class=\"alert alert-warning text-center col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-    Next Event: " . $uniqueBookings[$count][1] . " from " . $uniqueBookings[$count][2] . "</div>";
+            if ($count < sizeof($uniqueBookings)) {
+                echo "<div class=\"alert alert-warning text-center col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
+                    Next Event: " . $uniqueBookings[$count][1] . "</br> From " .
+                    getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
+            }
             $flag = true;
             break;
         }
@@ -99,15 +109,18 @@ if (sizeof($listallbookings) == 0) {
         foreach ($uniqueBookings as $value) {
             $eventstart = $value[2];
             $start_ts = strtotime($eventstart);
-            if ($start_ts >= strtotime(date('Y-m-d\TH:i:s'))) {
-                echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+            $startTime = date("D g:i A",strtotime($eventstart));
+            if ($start_ts >= strtotime(date("Y-m-d\TH:i:s"))) {
+                echo "<div class=\"alert alert-success col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
             <h4 class=\"alert-heading text-center\"> Now Available! </h4>
-            <p class='text-center'>( Until $eventstart ) </p>
+            <p class='text-center'>( Until $startTime ) </p>
             </div>";
-                echo "<div class=\"alert alert-warning text-center col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-                    <h4 class=\"alert-heading text-center\"> Next Event:  </h4>
-                    " . $uniqueBookings[$count][1] ."</br>".
-                    " From " . $uniqueBookings[$count][2] . "</div>";
+                $count = $key;
+                if ($count < sizeof($uniqueBookings)) {
+                    echo "<div class=\"alert alert-warning text-center col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
+                        Next Event: " . $uniqueBookings[$count][1] . "</br> From " .
+                        getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
+                }
                 break;
             }
         }
