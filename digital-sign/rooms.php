@@ -34,7 +34,6 @@
   }
   sort($roomInfo);
   array_shift($roomInfo);
-  print_r($roomInfo);
   ?>
 
 
