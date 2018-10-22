@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5">
     <title>Room Info</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -29,7 +30,7 @@ date_default_timezone_set(GSD_API_EVENTS_DEFAULT_TIMEZONE);
 $client = new SoapClient(SERT_SERVICE_URL);
 
 $bookingparams =  array('UserName' => SERT_USERNAME, 'Password' => SERT_PASSWORD,
-    'StartDate' => date( 'Y-m-d\T00:00:00' ), 'EndDate' => date("Y-m-d\TH:i:s",time()+(2 * 24 * 60 * 60)),
+    'StartDate' => date( 'Y-m-d\TH:i:s' ), 'EndDate' => date("Y-m-d\TH:i:s", time()+(6 * 24 * 60 * 60)),
     'RoomID' => $id, 'ViewComboRoomComponents' => TRUE);
 $roomparams = array('UserName' => SERT_USERNAME, 'Password' => SERT_PASSWORD,'RoomID' => $id);
 $bookinginfo = simplexml_load_string($client->GetAllRoomBookings($bookingparams)->GetAllRoomBookingsResult);
@@ -52,7 +53,11 @@ foreach ($bookinginfo as $value) {
         $eventstart, $eventend, $contact));
 }
 
-echo "<h1 class=\"text-center\">Room: $roomname </h1>";
+$time = date("F j, Y, g:i a");
+
+echo "</br>.<h3 class=\"text-center\"> $time </h3>.</br>";
+
+echo "<h1 class=\"text-center\"> $roomname </h1>";
 
 function mySort($a, $b) {
     $a = $a[2];
@@ -63,7 +68,7 @@ function mySort($a, $b) {
 
 if (sizeof($listallbookings) == 0) {
     echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-      <h4 class=\"alert-heading text-center\"> Available for two days! </h4>
+      <h4 class=\"alert-heading text-center\"> No next event scheduled. </h4>
   </div>";
     return;
 } else {
@@ -83,6 +88,10 @@ if (sizeof($listallbookings) == 0) {
 
     function getTime($time) {
         return date("D g:i A",strtotime($time));
+    }
+
+    function getDifference($t1, $t2) {
+        return round((strtotime($t2) - strtotime($t1)) / 3600 );
     }
 
 
@@ -116,10 +125,23 @@ if (sizeof($listallbookings) == 0) {
             $eventstart = $value[2];
             $start_ts = strtotime($eventstart);
             $startTime = date("D g:i A",strtotime($eventstart));
-            if ($start_ts >= strtotime(date("Y-m-d\TH:i:s"))) {
+
+            if (check_in_range(date("Y-m-d\TH:i:s"),date("Y-m-d\T23:59:59"),$eventstart)) {
+                $dif = getDifference(date("Y-m-d\TH:i:s"), $eventstart);
                 echo "<div class=\"alert alert-success col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
-            <h4 class=\"alert-heading text-center\"> Now Available! </h4>
+            <h4 class=\"alert-heading text-center\"> Now Available for around $dif hours! </h4>
             <p class='text-center'>( Until $startTime ) </p>
+            </div>";
+                $count = $key;
+                if ($count < sizeof($uniqueBookings)) {
+                    echo "<div class=\"alert alert-warning text-center col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
+                        Next Event: " . $uniqueBookings[$count][1] . "</br> From " .
+                        getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
+                }
+                break;
+            } elseif($start_ts >= strtotime(date("Y-m-d\TH:i:s"))) {
+                echo "<div class=\"alert alert-success col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
+            <h4 class=\"alert-heading text-center\"> Available for the rest of the day! </h4>
             </div>";
                 $count = $key;
                 if ($count < sizeof($uniqueBookings)) {
@@ -133,6 +155,9 @@ if (sizeof($listallbookings) == 0) {
     }
 }
 ?>
+
+<br/><br/>
+<h4 class="text-center"> For reservations, contact CGBC Admin Staff </h4>
 
 </body>
 </html>
