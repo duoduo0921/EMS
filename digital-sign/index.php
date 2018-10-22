@@ -63,7 +63,7 @@ function mySort($a, $b) {
 
 if (sizeof($listallbookings) == 0) {
     echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-      <h4 class=\"alert-heading text-center\"> Available in two days! </h4>
+      <h4 class=\"alert-heading text-center\"> Available for two days! </h4>
   </div>";
     return;
 } else {
