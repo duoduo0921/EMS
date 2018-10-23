@@ -66,11 +66,12 @@ function mySort($a, $b) {
     return (strtotime($a) < strtotime($b)) ? -1 : 1;
 }
 
+//print_r($listallbookings);
+
 if (sizeof($listallbookings) == 0) {
     echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-      <h4 class=\"alert-heading text-center\"> No next event scheduled. </h4>
+      <h4 class=\"alert-heading text-center\"> No next event scheduled! </h4>
   </div>";
-    //return;
 } else {
     $uniqueBookings = array_unique($listallbookings, SORT_REGULAR);
     usort($uniqueBookings, "mySort");
@@ -102,6 +103,7 @@ if (sizeof($listallbookings) == 0) {
         $eventstart = $value[2];
         $eventend = $value[3];
 
+        //now is between one section
         if (check_in_range($eventstart, $eventend, date("Y-m-d\TH:i:s"))) {
             $endTime = (date('g:i A',strtotime($eventend)));
             echo "<div class=\"alert alert-danger col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
@@ -120,41 +122,55 @@ if (sizeof($listallbookings) == 0) {
         }
     }
 
+    $counter = 0;
+    //now is available
     if (!$flag) {
-        foreach ($uniqueBookings as $value) {
+        $found = false;
+        foreach ($uniqueBookings as $key=>$value) {
             $eventstart = $value[2];
             $start_ts = strtotime($eventstart);
             $startTime = date("D g:i A",strtotime($eventstart));
+            $counter = $key+1;
+            if ($start_ts > strtotime(date("Y-m-d\TH:i:s"))) {
+                $found = true;
+            }
 
-            if (check_in_range(date("Y-m-d\TH:i:s"),date("Y-m-d\T23:59:59"),$eventstart)) {
-                $dif = getDifference(date("Y-m-d\TH:i:s"), $eventstart);
+            if (check_in_range(date("Y-m-d\TH:i:s"),date("Y-m-d\T23:59:59"),$eventstart)) { // is in today
+                if(getDifference(date("Y-m-d\TH:i:s"), $eventstart) < 1) {
+                    $dif = "less than an hour!";
+                } elseif(getDifference(date("Y-m-d\TH:i:s"), $eventstart) < 2) {
+                    $dif = "around ".getDifference(date("Y-m-d\TH:i:s"), $eventstart)." hour!";
+                } else {
+                    $dif = "around ".getDifference(date("Y-m-d\TH:i:s"), $eventstart)." hours!";
+                }
                 echo "<div class=\"alert alert-success col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
-            <h4 class=\"alert-heading text-center\"> Now Available for around $dif hours! </h4>
+            <h4 class=\"alert-heading text-center\"> Now Available for $dif </h4>
             <p class='text-center'>( Until $startTime ) </p>
             </div>";
-                $count = $key;
-                if ($count < sizeof($uniqueBookings)) {
+                $counter = $key;
+                //print_r($uniqueBookings);
                     echo "<div class=\"alert alert-warning text-center col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
-                        Next Event: " . $uniqueBookings[$count][1] . "</br> From " .
-                        getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
-                }
+                        Next Event: " . $uniqueBookings[$counter][1] . "</br> From " .
+                        getTime($uniqueBookings[$counter][2]) . " to ". getTime($uniqueBookings[$counter][3]) ."</div>";
                 break;
-            } elseif($start_ts >= strtotime(date("Y-m-d\TH:i:s"))) {
+            } elseif($start_ts > strtotime(date("Y-m-d\T23:59:59"))) { //not in today
                 echo "<div class=\"alert alert-success col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
             <h4 class=\"alert-heading text-center\"> Available for the rest of the day! </h4>
             </div>";
-                $count = $key;
-                if ($count < sizeof($uniqueBookings)) {
+                $counter = $key;
+                if ($counter < sizeof($uniqueBookings)) {
                     echo "<div class=\"alert alert-warning text-center col-xs-12 col-sm-10 col-md-8 offset-md-2 offset-sm-1\" role=\"alert\">
-                        Next Event: " . $uniqueBookings[$count][1] . "</br> From " .
-                        getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
+                        Next Event: " . $uniqueBookings[$counter][1] . "</br> From " .
+                        getTime($uniqueBookings[$counter][2]) . " to ". getTime($uniqueBookings[$counter][3]) ."</div>";
                 }
                 break;
-            } else {
-                echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
-                <h4 class=\"alert-heading text-center\"> No next event scheduled. </h4>
-            </div>";
             }
+        }
+
+        if (!$found) {
+            echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+                    <h4 class=\"alert-heading text-center\"> No next event scheduled! </h4>
+                </div>";
         }
     }
 }
