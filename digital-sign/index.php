@@ -70,7 +70,7 @@ if (sizeof($listallbookings) == 0) {
     echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
       <h4 class=\"alert-heading text-center\"> No next event scheduled. </h4>
   </div>";
-    return;
+    //return;
 } else {
     $uniqueBookings = array_unique($listallbookings, SORT_REGULAR);
     usort($uniqueBookings, "mySort");
@@ -150,6 +150,10 @@ if (sizeof($listallbookings) == 0) {
                         getTime($uniqueBookings[$count][2]) . " to ". getTime($uniqueBookings[$count][3]) ."</div>";
                 }
                 break;
+            } else {
+                echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
+                <h4 class=\"alert-heading text-center\"> No next event scheduled. </h4>
+            </div>";
             }
         }
     }
