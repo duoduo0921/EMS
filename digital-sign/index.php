@@ -64,9 +64,13 @@ foreach ($bookinginfo as $value) {
 
 $time = date("D F j, Y, g:i a");
 
-echo "</br><h3 class=\"text-center\"> $time </h3></br>";
-
-echo "<h1 class=\"text-center\"> $roomname </h1>";
+echo "<br/><br/><div style=\"margin-left: 25%\">
+    <div><img src=\"logo.png\" style=\"float: left\" height=\"100\" width=\"200\"/></div>
+    <div style=\"margin-left: 220px\">
+        <h3> $time </h3>
+        <h1> $roomname </h1>
+    </div>
+</div><br/>";
 
 function mySort($a, $b) {
     $a = $a[2];
