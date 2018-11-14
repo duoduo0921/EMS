@@ -29,13 +29,16 @@ date_default_timezone_set(GSD_API_EVENTS_DEFAULT_TIMEZONE);
 // define new soap client object
 $client = new SoapClient(SERT_SERVICE_URL);
 
+//params for get bookings
 $bookingparams =  array('UserName' => SERT_USERNAME, 'Password' => SERT_PASSWORD,
     'StartDate' => date( 'Y-m-d\TH:i:s' ), 'EndDate' => date("Y-m-d\TH:i:s", time()+(6 * 24 * 60 * 60)),
     'RoomID' => $id, 'ViewComboRoomComponents' => TRUE);
+//params for get rooms
 $roomparams = array('UserName' => SERT_USERNAME, 'Password' => SERT_PASSWORD,'RoomID' => $id);
 $bookinginfo = simplexml_load_string($client->GetAllRoomBookings($bookingparams)->GetAllRoomBookingsResult);
 $roomdetail = simplexml_load_string($client->GetRoomDetails($roomparams)->GetRoomDetailsResult);
 
+//get the roomname base on these three id number
 if($id == '109') {
     $roomname = 'HouseZero - First Floor';
 } elseif($id == '110') {
@@ -48,6 +51,7 @@ if($id == '109') {
 
 $listallbookings=array();
 
+//loop through bookinginfo and push all info we need to listallbookings
 foreach ($bookinginfo as $value) {
     $groupname = (string)$value->GroupName;
     $eventname = (string)$value->EventName;
@@ -62,6 +66,7 @@ foreach ($bookinginfo as $value) {
         $eventstart, $eventend, $contact));
 }
 
+//the date in format of "Wed November 14, 2018, 10:54 am"
 $time = date("D F j, Y, g:i a");
 
 echo "<br/><br/><div style=\"margin-left: 25%\">
@@ -72,6 +77,7 @@ echo "<br/><br/><div style=\"margin-left: 25%\">
     </div>
 </div><br/>";
 
+//mysort based on time
 function mySort($a, $b) {
     $a = $a[2];
     $b = $b[2];
@@ -81,6 +87,7 @@ function mySort($a, $b) {
 
 //print_r($listallbookings);
 
+//the case where no next event scheduled for this week
 if (sizeof($listallbookings) == 0) {
     echo "<div class=\"alert alert-success col-12 col-sm-6 col-md-8 offset-md-2\" role=\"alert\">
       <h3 class=\"alert-heading text-center\"> No next event scheduled </h3>
@@ -89,6 +96,7 @@ if (sizeof($listallbookings) == 0) {
     $uniqueBookings = array_unique($listallbookings, SORT_REGULAR);
     usort($uniqueBookings, "mySort");
 
+    //check if a time is in range
     function check_in_range($start_date, $end_date, $date_from_user)
     {
         // Convert to timestamp
@@ -100,6 +108,7 @@ if (sizeof($listallbookings) == 0) {
         return (($user_ts >= $start_ts) && ($user_ts <= $end_ts));
     }
 
+    //get a time in the format
     function getTime($time) {
         if (strtotime($time) < strtotime(date('Y-m-d\T23:59:59'))) {
             return 'Today '.date("g:i A",strtotime($time));
@@ -141,7 +150,7 @@ if (sizeof($listallbookings) == 0) {
     }
 
     $counter = 0;
-    //now is available
+    //available for now
     if (!$flag) {
         $found = false;
         foreach ($uniqueBookings as $key=>$value) {
