@@ -16,7 +16,12 @@
 <?php
 // EMS Variables defined as constants
 
-$id = $_GET['id'];
+if($_GET['id']) {
+    $id = $_GET['id'];
+} else {
+    $id = 1;
+}
+
 
 try {
     require 'EMS_VARIABLES.php';
@@ -70,7 +75,7 @@ foreach ($bookinginfo as $value) {
 $time = date("D F j, Y, g:i a");
 
 echo "<br/><br/><div style=\"margin-left: 25%\">
-    <div><img src=\"logo.png\" style=\"float: left\" height=\"100\" width=\"200\"/></div>
+    <div><img src=\"/logo.png\" style=\"float: left\" height=\"100\" width=\"200\"/></div>
     <div style=\"margin-left: 220px\">
         <h3> $time </h3>
         <h1> $roomname </h1>
